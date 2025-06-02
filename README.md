@@ -9,3 +9,7 @@ A library and application for generating realisting, fake data.
 - Phone numbers
 - Emails
 - Passwords
+
+## Roadmap
+
+- Allow extending data source?
