@@ -12,4 +12,16 @@ A library and application for generating realisting, fake data.
 
 ## Roadmap
 
-- Allow extending data source?
+- [ ] Allow extending data source?
+- [ ] Output file formats
+  - [ ] `txt`
+  - [ ] `json`
+  - [ ] `yaml`
+  - [ ] `toml`
+  - [ ] `csv` 
+- [ ] Data types
+  - [x] Names
+  - [ ] Emails
+  - [ ] Uuids
+  - [x] Phone numbers
+  - [ ] 
