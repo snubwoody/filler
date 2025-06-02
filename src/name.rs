@@ -1,4 +1,5 @@
 use std::{collections::HashMap, fs};
+use rand::seq::IndexedRandom;
 use serde::{Deserialize, Serialize};
 
 
@@ -28,8 +29,16 @@ pub fn parse_config() -> crate::Result<NameConfig>{
 }
 
 pub fn generate_name(config: &NameConfig) -> String{
-	let country = config.countries.get(&Country::Japan);
-	String::new()
+	let mut rng = rand::rng();
+	let country = config.countries.get(&Country::Japan).unwrap();
+	let first_name = country.first_names
+		.choose(&mut rng)
+		.unwrap_or(&String::from("John")).clone();
+	let surname = country.surnames
+		.choose(&mut rng)
+		.unwrap_or(&String::from("Smith")).clone();
+	
+	format!("{first_name} {surname}")
 }
 
 #[cfg(test)]
