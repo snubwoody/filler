@@ -22,6 +22,6 @@ A library and application for generating realisting, fake data.
 - [ ] Data types
   - [x] Names
   - [ ] Emails
-  - [ ] Uuids
-  - [x] Phone numbers
+  - [x] Uuids
+  - [ ] Phone numbers
   - [ ] 
