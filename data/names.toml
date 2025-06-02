@@ -1,3 +1,60 @@
-names = [
-	""
+
+[usa]
+first_names = [
+	"John",
+	"James",
+	"Amy",
+	"Abigail",
+	"William"
+]
+
+surnames = [
+	"Smith",
+	"Johnson"
+]
+
+
+[japan]
+first_names = [
+	"Sakura",
+	"Yuki",
+	"Hiroshi",
+	"Yuna",
+	"Haruki",
+	"Ryo",
+	"Shun",
+	"Yui",
+	"Aoi",
+	"Yuta",
+	"Yuto",
+	"Kenta",
+	"Makoto",
+	"Taichi",
+	"Akane",
+	"Airi",
+	"Akari",
+	"Aya",
+	"Emi"
+]
+
+surnames = [
+	"Aki",
+	"Amari",
+	"Adachi",
+	"Godo",
+	"Ada",
+	"Furuya",
+	"Hagiwara",
+	"Hirota",
+	"Ito",
+	"Aoki",
+	"Fuji",
+	"Kimura",
+	"Yoshida",
+	"Saito",
+	"Endo",
+	"Hashimoto",
+	"Inoue",
+	"Miura",
+	"Nakano"
 ]
