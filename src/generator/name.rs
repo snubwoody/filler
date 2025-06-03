@@ -1,4 +1,4 @@
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, fs, path::Path};
 use rand::seq::IndexedRandom;
 use serde::{Deserialize, Serialize};
 use super::Generator;
@@ -29,6 +29,12 @@ impl Generator for NameGen{
 			.unwrap_or(&String::from("Smith")).clone();
 		
 		format!("{first_name} {surname}")
+	}
+
+	fn write_json<P>(&self,count: u32,path: P) -> crate::Result<()>
+	where P: AsRef<Path> 
+	{
+		Ok(())
 	}
 }
 

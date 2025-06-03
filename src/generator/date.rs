@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use chrono::{Datelike, NaiveDate};
 
 use super::Generator;
@@ -52,6 +54,20 @@ impl Generator for DateGen{
 		let date = NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap();
 		date
 	}
+
+	fn write_json<P>(&self,count: u32,path: P) -> crate::Result<()>
+	where P: AsRef<Path> 
+	{
+		// let ids = self.generate_many(count);
+		// let body = json!({"ids":ids});
+		// let file = fs::OpenOptions::new()
+		// 	.write(true)
+		// 	.create(true)
+		// 	.open(path)?;
+
+		// serde_json::to_writer_pretty(file, &body)?;
+		Ok(())
+	}
 }
 
 pub fn gen_date() -> NaiveDate{
@@ -69,6 +85,9 @@ pub fn gen_date() -> NaiveDate{
 #[cfg(test)]
 mod tests{
 	use super::*;
+	use std::fs::{self, File};
+	use serde_json::Value;
+
 	// TODO:
 	// - End date less than start date
 
@@ -95,4 +114,21 @@ mod tests{
 		assert!(date >= start);
 		assert!(date <= end);
 	}
+
+	// #[test]
+	// fn write_uuid_to_json() -> crate::Result<()>{
+	// 	let num: u32 = rand::random();
+	// 	let path = format!("./temp/test-{num}.json");
+	// 	let uuid_gen = DateGen::new();
+	// 	uuid_gen.write_json(100, &path)?;
+		
+	// 	let file = File::open(&path)?;
+	// 	let data: Value = serde_json::from_reader(file)?;
+	// 	let ids = data.get("ids").unwrap().as_array().unwrap();
+	// 	assert_eq!(ids.len(),100);
+	// 	fs::remove_file(&path)?;
+
+	// 	Ok(())
+	// }
 }
+

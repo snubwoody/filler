@@ -9,5 +9,7 @@ pub enum Error{
 	#[error(transparent)]
 	Io(#[from] io::Error),
 	#[error(transparent)]
-	TomlDeserialize(#[from] toml::de::Error)
+	TomlDeserialize(#[from] toml::de::Error),
+	#[error(transparent)]
+	SerdeJson(#[from] serde_json::Error),
 }
