@@ -1,14 +1,9 @@
 //! Library for generating dummy data.
 mod error;
-pub mod date;
 pub mod generator;
-pub mod name;
-use chrono::NaiveDate;
 use clap::{Parser, Subcommand};
-use date::gen_date;
-use name::generate_name;
-use uuid::Uuid;
 pub use error::{Error,Result};
+use crate::generator::{DateGen, Generator, NameGen, UuidGen};
 
 
 /// Generate realistic dummy data
@@ -59,17 +54,18 @@ pub fn cli_main(){
 fn gen_main(command: &GenCommand){
 	match command {
 		GenCommand::Uuids { count } => {
-			// TODO allow selecting uuid version
-			let ids: Vec<Uuid> = (0..*count).map(|_|Uuid::new_v4()).collect();
+			let uuid_gen = UuidGen::new();
+			let ids = uuid_gen.generate_many(*count);
 			println!("{:?}",ids)
 		},
 		GenCommand::Names { count } => {
-			let config = name::parse_config().unwrap();
-			let names: Vec<String> = (0..*count).map(|_|generate_name(&config)).collect();
+			let name_gen = NameGen::new().unwrap();
+			let names = name_gen.generate_many(*count);
 			println!("{:?}",names);
 		}
 		GenCommand::Dates { count } => {
-			let dates: Vec<NaiveDate> = (0..*count).map(|_|gen_date()).collect();
+			let date_gen = DateGen::new();
+			let dates = date_gen.generate_many(*count);
 			println!("{:?}",dates);
 		}
 	}
