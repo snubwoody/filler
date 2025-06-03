@@ -1,6 +1,20 @@
+mod name;
+mod date;
 use uuid::Uuid;
+pub use name::NameGen;
+pub use date::DateGen;
 
 /// A trait for generating random/dummy data
+/// 
+/// In general [`Generators`] are cheap and it is not neccessary
+/// to store and reuse them, there's little internal state.
+/// 
+/// The current generators are:
+/// 
+/// - [`DateGen`]
+/// - [`UuidGen`]
+/// - [`NameGen`]
+/// 
 pub trait Generator{
 	type Output;
 
