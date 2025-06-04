@@ -1,5 +1,5 @@
 
 
-fn main() -> Result<(), filler::Error>{
+fn main(){
 	filler::main()
 }

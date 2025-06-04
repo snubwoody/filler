@@ -1,7 +1,7 @@
 //! Library for generating dummy data.
 mod error;
 pub mod generator;
-use std::path::PathBuf;
+use std::{path::PathBuf, process::exit};
 use clap::{Parser, Subcommand, ValueEnum};
 pub use error::{Error,Result};
 use crate::generator::{DateGen, Generator, NameGen, UuidGen};
@@ -60,14 +60,26 @@ pub enum OutputFormat{
 	Toml
 }
 
-pub fn main() -> crate::Result<()> {
+pub fn main(){
 	let cli = Cli::parse();
-	match &cli.command {
+	let result = handle_command(&cli.command);
+	if let Err(error) = result{
+		println!("{:#?}",error);
+		exit(1)
+	}
+}
+
+fn handle_command(command: &CliCommand) -> crate::Result<()>{
+	match command {
 		CliCommand::Gen { command, count, path,format } => {
+			if let Some(file) = path{
+				if !file.is_file(){
+					return Err(Error::InvalidPath)
+				}
+			}
 			configure_generator(command)?
 		}
 	}
-
 	Ok(())
 }
 
@@ -93,4 +105,35 @@ fn configure_generator(command: &GenCommand) -> crate::Result<()>{
 	}
 
 	Ok(())
+}
+
+#[cfg(test)]
+mod tests{
+	use super::*;
+
+	#[test]
+	fn empty_path(){
+		let command = CliCommand::Gen { 
+			count: 10, 
+			path: Some(PathBuf::new()), 
+			format: Some(OutputFormat::Json), 
+			command: GenCommand::Dates { count: 10 } 
+		}; 
+
+		let err = handle_command(&command).err().unwrap();
+		assert!(matches!(err,Error::InvalidPath));
+	}
+
+	#[test]
+	fn folder_as_path_fails(){
+		let command = CliCommand::Gen { 
+			count: 10, 
+			path: Some(PathBuf::new()), 
+			format: Some(OutputFormat::Json), 
+			command: GenCommand::Dates { count: 10 } 
+		}; 
+
+		let err = handle_command(&command);
+		dbg!(err);
+	}
 }
