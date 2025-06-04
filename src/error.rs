@@ -12,6 +12,6 @@ pub enum Error{
 	TomlDeserialize(#[from] toml::de::Error),
 	#[error(transparent)]
 	SerdeJson(#[from] serde_json::Error),
-	#[error("The path argument is a folder")]
+	#[error("Invalid path")]
 	InvalidPath
 }

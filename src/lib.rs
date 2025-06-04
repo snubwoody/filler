@@ -33,30 +33,17 @@ enum CliCommand{
 
 #[derive(Subcommand)]
 enum GenCommand{
-	Uuids{
-		/// The number of uuids to generate
-		#[arg(short,long,default_value_t=1000)]
-		count: u32,
-		#[arg(short='o',long="out")]
-		path: PathBuf
-	},
-	Names{
-		/// The number of names to generate
-		#[arg(short,long,default_value_t=1000)]
-		count: u32
-	},
-	Dates{
-		/// The number of dates to generate
-		#[arg(short,long,default_value_t=1000)]
-		count: u32,
-	}
+	Uuids,
+	Names,
+	Dates
 }
 
-#[derive(Debug,Clone,Copy,PartialEq,ValueEnum)]
+#[derive(Debug,Clone,Copy,PartialEq,ValueEnum,Default)]
 pub enum OutputFormat{
+	#[default]
+	Text,
 	Json,
 	Yaml,
-	Text,
 	Toml
 }
 
@@ -77,29 +64,37 @@ fn handle_command(command: &CliCommand) -> crate::Result<()>{
 					return Err(Error::InvalidPath)
 				}
 			}
-			configure_generator(command)?
+			// Check for file extension
+			let format = format.unwrap_or_default();
+
+			match format {
+				OutputFormat::Json => {
+					gen_json(command,*count)?
+
+				},
+				_ => {}
+			}
 		}
 	}
 	Ok(())
 }
 
-/// Configure a generator to use
-fn configure_generator(command: &GenCommand) -> crate::Result<()>{
+
+fn gen_json(command: &GenCommand,count: u32) -> crate::Result<()>{
 	match command {
-		GenCommand::Uuids { count,path} => {
+		GenCommand::Uuids => {
 			let uuid_gen = UuidGen::new();
-			let ids = uuid_gen.generate_many(*count);
-			uuid_gen.write_json(ids, path).unwrap();
-			// println!("{:?}",ids)
+			let ids = uuid_gen.generate_many(count);
+			uuid_gen.json(ids);
 		},
-		GenCommand::Names { count } => {
+		GenCommand::Names => {
 			let name_gen = NameGen::new()?;
-			let names = name_gen.generate_many(*count);
+			let names = name_gen.generate_many(count);
 			println!("{:?}",names);
 		}
-		GenCommand::Dates { count } => {
+		GenCommand::Dates => {
 			let date_gen = DateGen::new();
-			let dates = date_gen.generate_many(*count);
+			let dates = date_gen.generate_many(count);
 			println!("{:?}",dates);
 		}
 	}
@@ -109,6 +104,8 @@ fn configure_generator(command: &GenCommand) -> crate::Result<()>{
 
 #[cfg(test)]
 mod tests{
+	use std::fs;
+	use uuid::Uuid;
 	use super::*;
 
 	#[test]
@@ -117,23 +114,47 @@ mod tests{
 			count: 10, 
 			path: Some(PathBuf::new()), 
 			format: Some(OutputFormat::Json), 
-			command: GenCommand::Dates { count: 10 } 
+			command: GenCommand::Dates 
 		}; 
 
 		let err = handle_command(&command).err().unwrap();
 		assert!(matches!(err,Error::InvalidPath));
 	}
-
+	
 	#[test]
-	fn folder_as_path_fails(){
+	fn folder_as_path_fails() -> crate::Result<()>{
+		let path = format!("temp/test-{}",Uuid::new_v4());
+		fs::create_dir(&path)?;
+		let path = PathBuf::from(&path);
+		
 		let command = CliCommand::Gen { 
 			count: 10, 
-			path: Some(PathBuf::new()), 
+			path: Some(path.clone()), 
 			format: Some(OutputFormat::Json), 
-			command: GenCommand::Dates { count: 10 } 
+			command: GenCommand::Dates 
 		}; 
+		
+		let err = handle_command(&command).err().unwrap();
+		fs::remove_dir(path)?;
+		assert!(matches!(err,Error::InvalidPath));
+		Ok(())
+	}
 
-		let err = handle_command(&command);
-		dbg!(err);
+	#[test]
+	fn gen_uuids() -> crate::Result<()>{
+		let path = format!("temp/test-{}",Uuid::new_v4());
+		let path = PathBuf::from(&path);
+		
+		let command = CliCommand::Gen { 
+			count: 100, 
+			path: Some(path.clone()), 
+			format: Some(OutputFormat::Json), 
+			command: GenCommand::Uuids 
+		}; 
+		
+		let err = handle_command(&command).err().unwrap();
+		fs::remove_dir(path)?;
+		assert!(matches!(err,Error::InvalidPath));
+		Ok(())
 	}
 }
