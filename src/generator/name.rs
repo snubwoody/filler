@@ -30,12 +30,6 @@ impl Generator for NameGen{
 		
 		format!("{first_name} {surname}")
 	}
-
-	fn write_json<P>(&self,count: u32,path: P) -> crate::Result<()>
-	where P: AsRef<Path> 
-	{
-		Ok(())
-	}
 }
 
 #[derive(Debug,Serialize,Deserialize,PartialEq, Eq,Hash,PartialOrd, Ord)]

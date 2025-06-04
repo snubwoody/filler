@@ -1,6 +1,7 @@
-use std::path::Path;
+use std::{fs, path::Path};
 
 use chrono::{Datelike, NaiveDate};
+use serde_json::json;
 
 use super::Generator;
 
@@ -54,40 +55,13 @@ impl Generator for DateGen{
 		let date = NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap();
 		date
 	}
-
-	fn write_json<P>(&self,count: u32,path: P) -> crate::Result<()>
-	where P: AsRef<Path> 
-	{
-		// let ids = self.generate_many(count);
-		// let body = json!({"ids":ids});
-		// let file = fs::OpenOptions::new()
-		// 	.write(true)
-		// 	.create(true)
-		// 	.open(path)?;
-
-		// serde_json::to_writer_pretty(file, &body)?;
-		Ok(())
-	}
-}
-
-pub fn gen_date() -> NaiveDate{
-	let start = NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
-	let end = NaiveDate::from_ymd_opt(2100, 12, 12).unwrap();
-	
-	let min_date = start.num_days_from_ce();
-	let max_date = end.num_days_from_ce();
-	
-	let day_from_ce: i32 = rand::random_range(min_date..max_date);
-	let date = NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap();
-	date
 }
 
 #[cfg(test)]
 mod tests{
-	use super::*;
-	use std::fs::{self, File};
+	use std::fs::File;
 	use serde_json::Value;
-
+	use super::*;
 	// TODO:
 	// - End date less than start date
 
@@ -115,20 +89,21 @@ mod tests{
 		assert!(date <= end);
 	}
 
-	// #[test]
-	// fn write_uuid_to_json() -> crate::Result<()>{
-	// 	let num: u32 = rand::random();
-	// 	let path = format!("./temp/test-{num}.json");
-	// 	let uuid_gen = DateGen::new();
-	// 	uuid_gen.write_json(100, &path)?;
+	#[test]
+	fn write_date_to_json() -> crate::Result<()>{
+		let num: u32 = rand::random();
+		let path = format!("./temp/test-{num}.json");
+		let date_gen = DateGen::new();
+		let dates = date_gen.generate_many(10);
+		date_gen.write_json(dates, &path)?;
 		
-	// 	let file = File::open(&path)?;
-	// 	let data: Value = serde_json::from_reader(file)?;
-	// 	let ids = data.get("ids").unwrap().as_array().unwrap();
-	// 	assert_eq!(ids.len(),100);
-	// 	fs::remove_file(&path)?;
+		let file = File::open(&path)?;
+		let data: Value = serde_json::from_reader(file)?;
+		let dates = data.get("data").unwrap().as_array().unwrap();
+		assert_eq!(dates.len(),10);
+		fs::remove_file(&path)?;
 
-	// 	Ok(())
-	// }
+		Ok(())
+	}
 }
 
