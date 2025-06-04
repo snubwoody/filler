@@ -19,7 +19,10 @@ pub use date::DateGen;
 /// - [`UuidGen`]
 /// - [`NameGen`]
 /// 
-pub trait Generator{
+pub trait Generator
+where 
+	Self::Output: Serialize
+{
 	type Output;
 
 	fn generate(&self) -> Self::Output;
@@ -27,11 +30,15 @@ pub trait Generator{
 		(0..count).map(|_|self.generate()).collect()
 	}
 
+	/// Format the data as json
+	fn json(&self,data: Vec<Self::Output>) -> serde_json::Value{
+		json!({"data":data})
+	}
+
 	/// Write the generated output to a json file
 	fn write_json<P>(&self,data: Vec<Self::Output>,path: P) -> crate::Result<()>
 	where 
 		P: AsRef<Path>,
-		Self::Output: Serialize
 	{
 		let body = json!({"data":data});
 		let file = fs::OpenOptions::new()

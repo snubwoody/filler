@@ -2,7 +2,7 @@
 mod error;
 pub mod generator;
 use std::path::PathBuf;
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
 pub use error::{Error,Result};
 use crate::generator::{DateGen, Generator, NameGen, UuidGen};
 
@@ -23,6 +23,8 @@ enum CliCommand{
 		count: u32,
 		#[arg(short='o',long="out")]
 		path: Option<PathBuf>,
+		#[arg(short,long,value_enum)]
+		format: Option<OutputFormat>,
 		
 		#[command(subcommand)]
 		command: GenCommand	
@@ -50,10 +52,18 @@ enum GenCommand{
 	}
 }
 
+#[derive(Debug,Clone,Copy,PartialEq,ValueEnum)]
+pub enum OutputFormat{
+	Json,
+	Yaml,
+	Text,
+	Toml
+}
+
 pub fn main() -> crate::Result<()> {
 	let cli = Cli::parse();
 	match &cli.command {
-		CliCommand::Gen { command, count, path } => {
+		CliCommand::Gen { command, count, path,format } => {
 			configure_generator(command)?
 		}
 	}
