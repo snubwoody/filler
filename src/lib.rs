@@ -50,17 +50,19 @@ enum GenCommand{
 	}
 }
 
-pub fn cli_main(){
+pub fn main() -> crate::Result<()> {
 	let cli = Cli::parse();
 	match &cli.command {
 		CliCommand::Gen { command, count, path } => {
-			configure_generator(command);
+			configure_generator(command)?
 		}
 	}
+
+	Ok(())
 }
 
 /// Configure a generator to use
-fn configure_generator(command: &GenCommand){
+fn configure_generator(command: &GenCommand) -> crate::Result<()>{
 	match command {
 		GenCommand::Uuids { count,path} => {
 			let uuid_gen = UuidGen::new();
@@ -69,7 +71,7 @@ fn configure_generator(command: &GenCommand){
 			// println!("{:?}",ids)
 		},
 		GenCommand::Names { count } => {
-			let name_gen = NameGen::new().unwrap();
+			let name_gen = NameGen::new()?;
 			let names = name_gen.generate_many(*count);
 			println!("{:?}",names);
 		}
@@ -79,4 +81,6 @@ fn configure_generator(command: &GenCommand){
 			println!("{:?}",dates);
 		}
 	}
+
+	Ok(())
 }
