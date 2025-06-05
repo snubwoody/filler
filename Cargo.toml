@@ -2,6 +2,7 @@
 name = "filler"
 version = "0.1.0"
 edition = "2024"
+authors = ["Wakunguma Kalimukwa <wakunguma13@gmail.com>"]
 
 [[bin]]
 name = "filler"
