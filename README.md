@@ -25,6 +25,23 @@ A library and application for generating realisting, fake data.
   - [x] Uuids
   - [ ] Phone numbers
 
+## CLI
+
+```bash
+filler gen --count 2 uuids
+```
+
+will output
+
+```json
+{
+    "data": [
+        "497dcba3-ecbf-4587-a2dd-5eb0665e6880",
+        "497dcba3-ecbf-4587-a2dd-5eb0665e6880"
+    ]
+}
+```
+
 ## License
 
 Licensed under either of
