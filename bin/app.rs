@@ -1,5 +1,3 @@
-
-
-fn main(){
-	filler::main()
+fn main() {
+    filler::main()
 }
