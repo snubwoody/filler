@@ -75,23 +75,20 @@ fn handle_command(command: &CliCommand) -> crate::Result<()> {
             // Check for file extension
             let format = format.unwrap_or_default();
 
-            match format {
-                OutputFormat::Json => {
-                    let json = gen_json(command, *count)?;
-                    match path {
-                        Some(file) => {
-                            let file =
-                                fs::OpenOptions::new().write(true).create(true).open(file)?;
+            if format == OutputFormat::Json {
+                let json = gen_json(command, *count)?;
+                match path {
+                    Some(file) => {
+                        let file =
+                            fs::OpenOptions::new().write(true).create(true).open(file)?;
 
-                            serde_json::to_writer_pretty(file, &json)?;
-                        }
-                        None => {
-                            let text = serde_json::to_string(&json)?;
-                            println!("{}", text);
-                        }
+                        serde_json::to_writer_pretty(file, &json)?;
+                    }
+                    None => {
+                        let text = serde_json::to_string(&json)?;
+                        println!("{}", text);
                     }
                 }
-                _ => {}
             }
         }
     }

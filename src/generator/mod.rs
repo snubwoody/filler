@@ -2,7 +2,7 @@ mod date;
 mod name;
 use std::{
     fs,
-    path::{Path, PathBuf},
+    path::Path,
 };
 
 pub use date::DateGen;
@@ -52,6 +52,12 @@ where
 }
 
 pub struct UuidGen;
+
+impl Default for UuidGen {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl UuidGen {
     pub fn new() -> Self {

@@ -1,7 +1,5 @@
-use std::{fs, path::Path};
 
 use chrono::{Datelike, NaiveDate};
-use serde_json::json;
 
 use super::Generator;
 
@@ -23,6 +21,12 @@ pub struct DateGen {
     start: NaiveDate,
     /// The maximum date that can be generated
     end: NaiveDate,
+}
+
+impl Default for DateGen {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl DateGen {
@@ -52,8 +56,8 @@ impl Generator for DateGen {
         let max_date = self.end.num_days_from_ce();
 
         let day_from_ce: i32 = rand::random_range(min_date..max_date);
-        let date = NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap();
-        date
+        
+        NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap()
     }
 }
 

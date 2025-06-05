@@ -1,7 +1,7 @@
 use super::Generator;
 use rand::seq::IndexedRandom;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, fs, path::Path};
+use std::{collections::HashMap, fs};
 
 pub struct NameGen {
     config: NameConfig,
