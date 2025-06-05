@@ -79,8 +79,7 @@ fn handle_command(command: &CliCommand) -> crate::Result<()> {
                 let json = gen_json(command, *count)?;
                 match path {
                     Some(file) => {
-                        let file =
-                            fs::OpenOptions::new().write(true).create(true).open(file)?;
+                        let file = fs::OpenOptions::new().write(true).create(true).open(file)?;
 
                         serde_json::to_writer_pretty(file, &json)?;
                     }

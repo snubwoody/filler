@@ -1,9 +1,6 @@
 mod date;
 mod name;
-use std::{
-    fs,
-    path::Path,
-};
+use std::{fs, path::Path};
 
 pub use date::DateGen;
 pub use name::NameGen;

@@ -1,4 +1,3 @@
-
 use chrono::{Datelike, NaiveDate};
 
 use super::Generator;
@@ -56,7 +55,7 @@ impl Generator for DateGen {
         let max_date = self.end.num_days_from_ce();
 
         let day_from_ce: i32 = rand::random_range(min_date..max_date);
-        
+
         NaiveDate::from_num_days_from_ce_opt(day_from_ce).unwrap()
     }
 }
