@@ -15,7 +15,7 @@ A library and application for generating realisting, fake data.
 - [ ] Allow extending data source?
 - [ ] Output file formats
   - [ ] `txt`
-  - [ ] `json`
+  - [x] `json`
   - [ ] `yaml`
   - [ ] `toml`
   - [ ] `csv` 
@@ -24,4 +24,3 @@ A library and application for generating realisting, fake data.
   - [ ] Emails
   - [x] Uuids
   - [ ] Phone numbers
-  - [ ] 
