@@ -1,7 +1,7 @@
 //! Library for generating dummy data.
 mod error;
 pub mod generator;
-use std::{path::PathBuf, process::exit};
+use std::{fs, path::PathBuf, process::exit};
 use clap::{Parser, Subcommand, ValueEnum};
 pub use error::{Error,Result};
 use crate::generator::{DateGen, Generator, NameGen, UuidGen};
@@ -60,7 +60,11 @@ fn handle_command(command: &CliCommand) -> crate::Result<()>{
 	match command {
 		CliCommand::Gen { command, count, path,format } => {
 			if let Some(file) = path{
-				if !file.is_file(){
+				// TODO writing files without extensions is valid though
+						
+				// Can't use `is_file` because the file might
+				// not exist yet
+				if file.extension().is_none(){
 					return Err(Error::InvalidPath)
 				}
 			}
@@ -69,8 +73,21 @@ fn handle_command(command: &CliCommand) -> crate::Result<()>{
 
 			match format {
 				OutputFormat::Json => {
-					gen_json(command,*count)?
+					let json = gen_json(command,*count)?;
+					match path {
+						Some(file) => {
+							let file = fs::OpenOptions::new()
+								.write(true)
+								.create(true)
+								.open(file)?;
 
+							serde_json::to_writer_pretty(file, &json)?;
+						},
+						None => {
+							let text = serde_json::to_string(&json)?;
+							println!("{}",text);
+						}
+					}
 				},
 				_ => {}
 			}
@@ -80,31 +97,34 @@ fn handle_command(command: &CliCommand) -> crate::Result<()>{
 }
 
 
-fn gen_json(command: &GenCommand,count: u32) -> crate::Result<()>{
-	match command {
+fn gen_json(command: &GenCommand,count: u32) -> crate::Result<serde_json::Value>{
+	let json = match command {
 		GenCommand::Uuids => {
 			let uuid_gen = UuidGen::new();
 			let ids = uuid_gen.generate_many(count);
-			uuid_gen.json(ids);
+			uuid_gen.json(ids)
 		},
 		GenCommand::Names => {
 			let name_gen = NameGen::new()?;
 			let names = name_gen.generate_many(count);
-			println!("{:?}",names);
+			name_gen.json(names)
 		}
 		GenCommand::Dates => {
 			let date_gen = DateGen::new();
 			let dates = date_gen.generate_many(count);
-			println!("{:?}",dates);
+			date_gen.json(dates)
 		}
-	}
+	};
 
-	Ok(())
+	Ok(json)
 }
 
+// TODO
+//	- Test that json ext auto infers format
 #[cfg(test)]
 mod tests{
-	use std::fs;
+	use std::fs::{self, File};
+	use serde_json::Value;
 	use uuid::Uuid;
 	use super::*;
 
@@ -142,7 +162,7 @@ mod tests{
 
 	#[test]
 	fn gen_uuids() -> crate::Result<()>{
-		let path = format!("temp/test-{}",Uuid::new_v4());
+		let path = format!("temp/test-{}.json",Uuid::new_v4());
 		let path = PathBuf::from(&path);
 		
 		let command = CliCommand::Gen { 
@@ -152,9 +172,17 @@ mod tests{
 			command: GenCommand::Uuids 
 		}; 
 		
-		let err = handle_command(&command).err().unwrap();
-		fs::remove_dir(path)?;
-		assert!(matches!(err,Error::InvalidPath));
+		handle_command(&command)?;
+
+		let file = File::open(&path)?;
+		let data = serde_json::from_reader::<_,Value>(file)?
+			.get_mut("data")
+			.unwrap()
+			.take();
+
+		let ids: Vec<Uuid> = serde_json::from_value(data)?;
+		assert_eq!(ids.len(),100);
+		fs::remove_file(path)?;
 		Ok(())
 	}
 }
