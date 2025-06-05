@@ -17,11 +17,13 @@ jobs:
       - run: cargo clippy -- -D warnings
   test:
     strategy:
+      fail-fast: false
       matrix: 
         os: [ubuntu-latest,macos-latest,windows-latest]
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v4
+      - uses: taiki-e/install-action@nextest
       - run: cargo nextest run
     
   all-systems-pass:
