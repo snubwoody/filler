@@ -64,7 +64,7 @@ impl Generator for DateGen {
 mod tests {
     use super::*;
     use serde_json::Value;
-    use std::fs::File;
+    use std::fs::{self, File};
     // TODO:
     // - End date less than start date
 

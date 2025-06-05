@@ -41,7 +41,11 @@ where
         P: AsRef<Path>,
     {
         let body = json!({"data":data});
-        let file = fs::OpenOptions::new().write(true).create(true).open(path)?;
+        let file = fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(path)?;
 
         serde_json::to_writer_pretty(file, &body)?;
         Ok(())
